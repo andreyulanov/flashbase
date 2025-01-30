@@ -55,12 +55,13 @@ protected:
   QVector<VectorTile>      tiles;
 
 public:
-  FlashMap();
-  FlashMap(Settings);
-  void   save(QString path) const;
-  void   loadMainVectorTile(QString path, bool load_objects);
-  void   loadVectorTile(QString path, int tile_idx);
-  void   loadAll(QString path);
+  FlashMap(const QString& path);
+  FlashMap(const QString& path, Settings);
+  void   save() const;
+  void   save(const QString&) const;
+  void   loadMainVectorTile(bool load_objects);
+  void   loadVectorTile(int tile_idx);
+  void   loadAll();
   void   clear();
   qint64 count() const;
   void   addMap(const FlashMap&);
@@ -93,4 +94,6 @@ public:
   VectorTile::Status getMainTileStatus() const;
   VectorTile::Status getTileStatus(int tile_idx) const;
   int                getTileCount() const;
+
+  QString path;
 };

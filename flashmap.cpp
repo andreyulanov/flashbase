@@ -1,7 +1,6 @@
 #include "math.h"
 #include "flashmap.h"
 #include "flashserialize.h"
-#include "flashlocker.h"
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QDateTime>
@@ -12,12 +11,14 @@ bool FlashMap::ObjectAddress::isValid() const
   return (tile_idx >= 0 && obj_idx >= 0);
 }
 
-FlashMap::FlashMap()
+FlashMap::FlashMap(const QString& path)
 {
+    this->path = path;
 }
 
-FlashMap::FlashMap(Settings v)
+FlashMap::FlashMap(const QString& path, Settings v)
 {
+  this->path = path;
   settings = v;
 }
 
@@ -42,7 +43,12 @@ qint64 FlashMap::count() const
   return total_count;
 }
 
-void FlashMap::save(QString path) const
+void FlashMap::save() const
+{
+    save(path);
+}
+
+void FlashMap::save(const QString& path) const
 {
   using namespace FlashSerialize;
 
@@ -115,7 +121,7 @@ void FlashMap::save(QString path) const
   write(&f, small_idx_start_pos);
 }
 
-void FlashMap::loadMainVectorTile(QString path, bool load_objects)
+void FlashMap::loadMainVectorTile(bool load_objects)
 {
   if (main.status == VectorTile::Loading)
     return;
@@ -213,18 +219,18 @@ void FlashMap::loadMainVectorTile(QString path, bool load_objects)
   tiles.resize(small_count);
 }
 
-void FlashMap::loadAll(QString path)
+void FlashMap::loadAll()
 {
-  loadMainVectorTile(path, true);
+  loadMainVectorTile(true);
   main.status = VectorTile::Loaded;
   for (int i = 0; i < tiles.count(); i++)
   {
-    loadVectorTile(path, i);
+    loadVectorTile(i);
     tiles[i].status = VectorTile::Loaded;
   }
 }
 
-void FlashMap::loadVectorTile(QString path, int tile_idx)
+void FlashMap::loadVectorTile(int tile_idx)
 {
   if (main.status != VectorTile::Loaded)
     return;
